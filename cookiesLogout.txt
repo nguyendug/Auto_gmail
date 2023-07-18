@@ -1,0 +1,31 @@
+[
+  {
+    "name": "NID",
+    "value": "511=luMnokU_MVNGq_3uCQXGvSyFPSfj-2oXDf6sVFJv8ddWmtIwEW1coJxN_Gph_gtUmg_NHyNCvc01G0P9f1yh9shFk_sETR22ppa3UZqYgAcjQgquA5qvkDLWU-F1MxdO48mIQsv54dzJ1cy0crNY10uQ0X_6GzC4WuLWl4Tg_vg",
+    "domain": ".google.com",
+    "path": "/",
+    "expires": 1705479811.894991,
+    "size": 178,
+    "httpOnly": true,
+    "secure": true,
+    "session": false,
+    "sameSite": "None",
+    "sameParty": false,
+    "sourceScheme": "Secure",
+    "sourcePort": 443
+  },
+  {
+    "name": "__Host-GAPS",
+    "value": "1:S-PnuqWNYCEaSLXfsH_CwmXTWX3RZA:K1FIHVVwbDDBIoJr",
+    "domain": "accounts.google.com",
+    "path": "/",
+    "expires": 1724228611.691665,
+    "size": 60,
+    "httpOnly": true,
+    "secure": true,
+    "session": false,
+    "sameParty": false,
+    "sourceScheme": "Secure",
+    "sourcePort": 443
+  }
+]
