@@ -4,7 +4,8 @@
   "description": "",
   "main": "cookies.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "start": "node ./cookie.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +13,7 @@
     "assert": "^2.0.0",
     "axios": "^1.4.0",
     "bluebird": "^3.7.2",
+    "mocha": "^10.2.0",
     "puppeteer-core": "^20.4.0"
   }
 }
