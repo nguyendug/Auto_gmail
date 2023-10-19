@@ -69,17 +69,22 @@ let i = 0;
     // console.log(inforProfile.data.name);
     assert(browser);
     const page = await browser.newPage(); //Mở 1 tab mới
-    const randomSearchEbay = async () => {
-      await page.click("#gh-ac");
-      await delay(2000);
-      const result = await fetch(`https://autosug.hidemyacc.com/keywords/ebay`);
-      const movie = await result.json();
-      const keywordSearch = Object.values(movie).toString();
-      console.log(keywordSearch);
 
-      await page.keyboard.type(keywordSearch);
-      await page.keyboard.press("Enter", { waitUntil: "load" });
-      await delay(5000);
+    const randomSearchEbay = async () => {
+      try {
+        await page.click("#gh-ac");
+        await delay(2000);
+        const result = await fetch(
+          `https://autosug.hidemyacc.com/keywords/ebay`
+        );
+        const movie = await result.json();
+        const keywordSearch = Object.values(movie).toString();
+        console.log(keywordSearch);
+
+        await page.keyboard.type(keywordSearch);
+        await page.keyboard.press("Enter", { waitUntil: "load" });
+        await delay(5000);
+      } catch (error) {}
     };
 
     const getLinkProduct = async () => {
@@ -110,21 +115,39 @@ let i = 0;
       } catch (error) {}
     };
 
+    const randomClickPage = async () => {
+      try {
+        const topics = await page.$$("ol.pagination__items li");
+        const randomNumberPage =
+          Math.floor(Math.random() * topics.length + 1) + 1;
+        console.log(randomNumberPage);
+        // click a random topic
+        await page.$eval(
+          `ol.pagination__items li:nth-child(${randomNumberPage}) a`,
+          (elem) => elem.click()
+        );
+      } catch (error) {}
+    };
+
     try {
       await goto(page, "https://www.ebay.com/", { waitUntil: "load" });
       await delay(2000);
       //https://autosug.hidemyacc.com/keywords/ebay  API keyword
       //Random search keyword
       await randomSearchEbay();
-      await page.mouse.wheel({ deltaY: 800 });
-      await delay(2000);
+      for (i; i < 4; i++) {
+        await page.mouse.wheel({ deltaY: 800 });
+        await delay(2000);
+      }
 
+      //Tìm vị trí hiện tại của trang web
       const startPosition = await page.evaluate(async () => {
         const mediary = window.scrollY;
         return mediary;
       });
       console.log(`Start point: ` + startPosition);
 
+      // Tìm vị trí theo selector
       // Find the iframe
       const frame = await page.waitForSelector(
         `ol.pagination__items li:nth-child(2)`
@@ -136,118 +159,67 @@ let i = 0;
       }, frame);
       console.log(`Vị trí selector: ` + elementPosition.y);
 
+      // Khoảng cách từ vị trí hiện tại đến vị trí của selector
       const distance = elementPosition.y - startPosition;
       console.log("Khoảng cách: " + distance);
 
-      const randomnumber = Math.floor(Math.random() * 301) + 500;
-      console.log(`Number random: ` + randomnumber);
-
-      const totalHeight = 0;
-      while (totalHeight >= distance) {
+      // Cuộn đến vị trí của selector
+      //Âm là cuộn lên, dương là cuộn xuống
+      let totalHeight = 0;
+      while (totalHeight < distance) {
         try {
-          const mediary = randomnumber;
-          await page.mouse.wheel({ deltaY: mediary });
-          await delay(2000);
-          totalHeight += mediary;
-          console.log(totalHeight);
+          // const mediary = randomnumber;
+          const randomNumberPixel = Math.floor(Math.random() * 301) + 500;
+          await page.mouse.wheel({ deltaY: randomNumberPixel });
+          totalHeight += randomNumberPixel;
+          console.log(`Total Height: ` + totalHeight);
+          if (totalHeight >= elementPosition) {
+            totalHeight = distance + randomNumberPixel;
+          }
+          const timedelay = Math.floor(Math.random() * 2001) + 1000;
+          await delay(timedelay);
+          console.log(`Time delay: ` + timedelay);
+          //console.log(m);
         } catch (error) {
           console.log(error.message);
         }
       }
+      await delay(5000);
 
-      // async function autoScroll(page) {
-      //   await page.evaluate(async () => {
-      //     await new Promise((resolve) => {
-      //       var totalHeight = 0;
-      //       var distance = 100;
-      //       var timer = setInterval(() => {
-      //         // var scrollHeight = document.body.scrollHeight;
-      //         var scrollHeight = rect.y;
-      //         window.scrollBy(0, distance);
-      //         totalHeight += distance;
+      //get link page 1
+      await getLinkProduct();
+      console.log("get link 1");
+      await delay(5000);
 
-      //         if (totalHeight >= scrollHeight) {
-      //           clearInterval(timer);
-      //           resolve();
-      //         }
-      //       }, 100);
-      //     });
-      //   });
-      // }
-      // await autoScroll(page);
+      //get link page 2
+      try {
+        // Random click page
+        await randomClickPage();
+        await delay(5000);
 
-      // const numberScroll = rect.y / 800;
-      // console.log(numberScroll);
+        //await page.click("ol.pagination__items li:nth-child(2)");
+        await delay(2000);
+        await getLinkProduct();
+        //console.log("get link 2");
+      } catch (error) {}
+      await delay(5000);
 
-      // for (var i = 0; i < 20; i++) {
-      //   await page.mouse.wheel({ deltaY: 800 });
-      //   await delay(2000);
-      // }
-
-      //Âm là cuộn lên, dương là cuộn xuống
-
-      // Cuộn chuột đến vị trí selector
-      // const selector =
-      //   'ol[class="pagination__items"] > li > a[class="pagination__item"]';
-
-      // for (let i = 0; i < 22; i++) {
-      //   await delay(2000);
-      //   await page.evaluate(
-      //     (selector, i) => {
-      //       const element = document.querySelectorAll(selector)[i];
-      //       if (element) {
-      //         element.scrollIntoView(x, y);
-      //         // return page.evaluate(
-      //         //   (_x, _y) => {
-      //         //     window.scrollIntoView(
-      //         //       parseInt(_x || 0, 10),
-      //         //       parseInt(_y || 0, 10)
-      //         //     );
-      //         //   },
-      //         //   x,
-      //         //   y
-      //         // );
-      //       }
-      //     },
-      //     selector,
-      //     i
-      //   );
-      // }
-
-      // //get link page 1
-      //await getLinkProduct();
-      //console.log("get link 1");
-
-      //  //get link page 2
-      // try {
-      //   //Random click page
-      //   // const topics = await page.$$("ol.pagination__items li");
-      //   // // create a random number from 0 to the topics.length-1
-      //   // const randomNumber = Math.floor(Math.random() * topics.length - 1);
-      //   // // click a random topic
-      //   // await page
-      //   //   .$(`ol.pagination__items li:nth-child(${randomNumber}) a`)
-      //   //   .click();
-
-      //   await page.click("ol.pagination__items li:nth-child(2)");
-      //   await delay(5000);
-      //   await getLinkProduct();
-      //   //console.log("get link 2");
-      // } catch (error) {}
-
-      // try {
-      //   await page.click(`a#gh-la`);
-      //   await page.mouse.wheel({ deltaY: 800 });
-      //   await delay(2000);
-      //   await page.mouse.wheel({ deltaY: -650 });
-      //   await delay(2000);
-      //   await randomSearchEbay();
-      //   await getLinkProduct();
-      //   await delay(5000);
-      //   await page.click("ol.pagination__items li:nth-child(2)");
-      //   await delay(5000);
-      //   await getLinkProduct();
-      // } catch (error) {}
+      try {
+        await page.click(`a#gh-la`);
+        await page.mouse.wheel({ deltaY: 800 });
+        await delay(2000);
+        await page.mouse.wheel({ deltaY: -650 });
+        await delay(2000);
+        await randomSearchEbay();
+        //console.log("Random search done");
+        await getLinkProduct();
+        //console.log("Get link product page 1");
+        await delay(5000);
+        await randomClickPage();
+        await delay(5000);
+        await getLinkProduct();
+        //console.log("Get link product page 1");
+      } catch (error) {}
     } catch (error) {
       console.log(error.message);
     }
