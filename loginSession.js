@@ -37,7 +37,7 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
 
 !(async () => {
   try {
-    const profileID = "65324f5c2717a3373fcfe8e3";
+    const profileID = "6533e78c2717a3373f14a884";
     //63d7386552d4f7546b5fb06f
     //647eff253bb6b40724437cfe
 
@@ -121,9 +121,9 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
         console.log("Đăng nhập tài khoản thành công");
       } else if (checkCaptcha == `Tài khoản không dính captcha`) {
         console.log(checkCaptcha);
-      } else {
+      } else if(checkSuspended == `Tài khoản đã bị đình chỉ`){
         console.log(checkSuspended);
-      }
+      }else
       await delay(2000);
     };
 
@@ -136,6 +136,7 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
         .$eval(`button#gh-ug.gh-ua.gh-control`, () => true)
         .catch(() => false);
 
+      //Check trạng thái đăng nhập
       if (elementLoginPass == true) {
         console.log("Log in thành công");
       } else {
