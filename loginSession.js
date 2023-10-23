@@ -37,7 +37,7 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
 
 !(async () => {
   try {
-    const profileID = "6533e78c2717a3373f14a884";
+    const profileID = "6533e78c2717a3373f14a88a";
     //63d7386552d4f7546b5fb06f
     //647eff253bb6b40724437cfe
 
@@ -67,8 +67,10 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
         .catch(() => false);
       if (check == true) {
         console.log("Tài khoản dính captcha");
+        console.log("captcha 1");
       } else {
         console.log("Tài khoản không dính captcha");
+        console.log("captcha 2");
       }
     };
 
@@ -83,48 +85,47 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
     //   }
     // };
 
-    const checkSuspended = async () => {
-      await page.$("h1#display-nb-welcome-msg");
-      //await checkElement();
-      //if(checkElement == true)
-      const value = await page.evaluate((el) => el.textContent, element);
-      console.log(value);
-      if (value.includes(` Your account has been suspended`, 0)) {
-        console.log(`Tài khoản đã bị đình chỉ`);
-      } else {
-        console.log("Tài khoản không bị đình chỉ");
-      }
-    };
+    // const checkSuspended = async () => {
+    //   await page.$("h1#display-nb-welcome-msg");
+    //   //await checkElement();
+    //   //if(checkElement == true)
+    //   const value = await page.evaluate((el) => el.textContent, element);
+    //   console.log(value);
+    //   if (value.includes(` Your account has been suspended`, 0)) {
+    //     console.log(`Tài khoản đã bị đình chỉ`);
+    //     console.log(`suspended 1`);
+    //   } else {
+    //     console.log("Tài khoản không bị đình chỉ");
+    //     console.log(`suspended 2`);
+    //   }
+    // };
 
     const loginEbay = async () => {
-      await page.click("span#gh-ug.gh-ug-guest > a", { waitUntil: "load" });
-      //await delay(2000);
-      await page.click("#userid");
-      await page.keyboard.type("ntdung7501@gmail.com");
-      // nguyendung7501@gmail.com
-      await page.keyboard.press("Enter");
-      await delay(2000);
-      await page.click("#pass");
-      await page.keyboard.type(
-        "Abcd1234!",
-        { delay: 100 },
-        { waitUntil: "load" }
-      );
-      // maibennhaubannhe75!
-      await page.keyboard.press("Enter");
-      await delay(2000);
-      //await checkCaptcha();
-      if (
-        checkCaptcha == `Tài khoản không dính captcha` ||
-        checkSuspended == `Tài khoản không bị đình chỉ`
-      ) {
-        console.log("Đăng nhập tài khoản thành công");
-      } else if (checkCaptcha == `Tài khoản không dính captcha`) {
-        console.log(checkCaptcha);
-      } else if(checkSuspended == `Tài khoản đã bị đình chỉ`){
-        console.log(checkSuspended);
-      }else
-      await delay(2000);
+      try {
+        await page.click("span#gh-ug.gh-ug-guest > a", { waitUntil: "load" });
+        //await delay(2000);
+        await page.click("#userid");
+        await page.keyboard.type("ntdung7501@gmail.com");
+        // nguyendung7501@gmail.com
+        await page.keyboard.press("Enter");
+        await delay(2000);
+        await page.click("#pass");
+        await page.keyboard.type(
+          "Abcd1234!",
+          { delay: 100 },
+          { waitUntil: "load" }
+        );
+        // maibennhaubannhe75!
+        await page.keyboard.press("Enter");
+        await delay(2000);
+        if (checkCaptcha == `Tài khoản không dính captcha`) {
+          console.log("Đăng nhập tài khoản thành công");
+        } else {
+          console.log(`Đăng nhập không thành công do tài khoản dính captcha`);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
     };
 
     try {
@@ -145,10 +146,57 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
         console.log(value);
         if (value.includes(`register`, 0)) {
           console.log(`Chưa có tài khoản được log in`);
-          await loginEbay();
+          //await loginEbay();
+          await page.click("span#gh-ug.gh-ug-guest > a", { waitUntil: "load" });
+          //await delay(2000);
+          await page.click("#userid");
+          await page.keyboard.type("ntdung7501@gmail.com");
+          // nguyendung7501@gmail.com
+          await page.keyboard.press("Enter");
+          await delay(2000);
+          await page.click("#pass");
+          await page.keyboard.type(
+            "Abcd1234!",
+            { delay: 100 },
+            { waitUntil: "load" }
+          );
+          // maibennhaubannhe75!
+          await page.keyboard.press("Enter");
+          await delay(2000);
+          if (checkCaptcha == `Tài khoản không dính captcha`) {
+            console.log("Đăng nhập tài khoản thành công");
+          } else {
+            console.log(`Đăng nhập không thành công do tài khoản dính captcha`);
+          }
+          await delay(2000);
+          await page.click(`a#gh-la`);
+          await delay(2000);
         } else {
           console.log("Tài khoản đã bị log out");
-          await loginEbay;
+          //await loginEbay();
+          await page.click("span#gh-ug.gh-ug-guest > a", { waitUntil: "load" });
+          await delay(2000);
+          await page.click("#pass");
+          await page.keyboard.type(
+            "Abcd1234!",
+            { delay: 100 },
+            { waitUntil: "load" }
+          );
+          // maibennhaubannhe75!
+          await page.keyboard.press("Enter");
+          await delay(2000);
+          // await checkCaptcha();
+          // console.log(checkCaptcha);
+          if (checkCaptcha == `Tài khoản không dính captcha`) {
+            console.log("Đăng nhập tài khoản thành công");
+          } else {
+            console.log(
+              `Đăng nhập không thành công do tài khoản dính captcha hoặc đã bị đình chỉ`
+            );
+          }
+          await delay(2000);
+          await page.click(`a#gh-la`);
+          await delay(2000);
         }
       }
     } catch (error) {

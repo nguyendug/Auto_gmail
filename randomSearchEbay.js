@@ -149,9 +149,7 @@ let i = 0;
 
       // Tìm vị trí theo selector
       // Find the iframe
-      const frame = await page.waitForSelector(
-        `ol.pagination__items li:nth-child(2)`
-      );
+      const frame = await page.waitForSelector(`ol.pagination__items li`);
       // Find its coordinates
       const elementPosition = await page.evaluate((el) => {
         const { x, y } = el.getBoundingClientRect();
@@ -169,13 +167,18 @@ let i = 0;
       while (totalHeight < distance) {
         try {
           // const mediary = randomnumber;
-          const randomNumberPixel = Math.floor(Math.random() * 301) + 500;
+          let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
+          if (totalHeight + randomNumberPixel > distance) {
+            randomNumberPixel = distance - totalHeight;
+          }
           await page.mouse.wheel({ deltaY: randomNumberPixel });
           totalHeight += randomNumberPixel;
           console.log(`Total Height: ` + totalHeight);
-          if (totalHeight >= elementPosition) {
-            totalHeight = distance + randomNumberPixel;
-          }
+          // if (totalHeight >= distance) {
+          //   totalHeight = distance - totalHeight;
+          //   console.log("Total Height 2: " + totalHeight);
+          //   break;
+          // }
           const timedelay = Math.floor(Math.random() * 2001) + 1000;
           await delay(timedelay);
           console.log(`Time delay: ` + timedelay);
