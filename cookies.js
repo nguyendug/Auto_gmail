@@ -48,9 +48,6 @@ const limit = pLimit(2);
 let vongLap = 0;
 
 !(async () => {
-  // let i = 0;
-  // while (i < 2) {
-  //   i++;
   try {
     let profileID = [
       "6528b151867efd72506ee504",
@@ -58,11 +55,6 @@ let vongLap = 0;
       "65168015f5f03d26a022f6e3",
     ];
 
-    let mailTM = [
-      "vosydkegtdsohh@hldrive.com",
-      "eedxhgtbtmsit@hldrive.com",
-      "uihkjm@hldrive.com",
-    ];
     // Create an array of our promises using map (fetchData() returns a promise)
     let promises = await profileID.map((id) => {
       // wrap the function we are calling in the limit function we defined above
@@ -95,91 +87,102 @@ let vongLap = 0;
           assert(browser);
           const page = await browser.newPage(); //Mở 1 tab mới
 
+          const checkLoginSession = async () => {
+            try {
+              await goto(page, "https://gmail.com/", { waitUntil: "load" });
+              await delay(5000);
+              const cookies = await page.cookies();
+              const isFound = cookies.some((element) => {
+                if (element.name === "GMAIL_AT") {
+                  return true;
+                }
+                return false;
+              });
+              if (isFound == true) {
+                console.log("Login session pass. Profile ID: " + id);
+              } else {
+                console.log("Login session fail. Profile ID:  " + id);
+              }
+            } catch (error) {}
+          };
+
+          const checkLocalStorage = async () => {
+            try {
+              await goto(page, "https://mail.tm/", {
+                waitUntil: "load",
+                timeout: 10000,
+              });
+              const localStorage = await page.evaluate(() =>
+                Object.assign({}, window.localStorage)
+              );
+              console.log(localStorage);
+              if (
+                JSON.stringify(localStorage).includes(
+                  `vosydkegtdsohh@hldrive.com`
+                ) ||
+                JSON.stringify(localStorage).includes(
+                  `eedxhgtbtmsit@hldrive.com`
+                ) ||
+                JSON.stringify(localStorage).includes(`uihkjm@hldrive.com`)
+              ) {
+                console.log("Local Storage Pass. ID: " + id);
+              } else {
+                console.log("Fail. ID: " + id);
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          };
+
+          const deleteCache = async () => {
+            try {
+              await delay(5000);
+              //Nối chuỗi xóa folder cache-profile
+              const profileCachePath = path.join(hidemyaccCachePath, id);
+              // console.log(profileCachePath);
+              //Kiểm tra folder có tồn tại và xóa folder có file
+              if (fs.existsSync(profileCachePath)) {
+                fs.rmSync(profileCachePath, { recursive: true, force: true });
+                console.log("Delete cache pass. Profile ID: " + id);
+              } else {
+                console.log("Folder cache not found. Profile ID: " + id);
+              }
+            } catch (error) {
+              console.log(error.message);
+            }
+          };
+
+          const deleteFolderProfile = async () => {
+            try {
+              //Nối chuỗi xóa folder profile
+              const folderProifle = "hma_" + id;
+              //console.log(folderProifle);
+              const profilePath = path.join(
+                hidemyaccProfilePath,
+                folderProifle
+              );
+              //console.log(profilePath);
+              //Kiểm tra folder có tồn tại và xóa folder có file
+              if (fs.existsSync(profilePath)) {
+                fs.rmSync(profilePath, { recursive: true, force: true });
+                console.log("Delete profile pass. Profile ID: " + id);
+              } else {
+                console.log("Folder profile not found. Profile ID: " + id);
+              }
+            } catch (error) {
+              console.log(error.message);
+            }
+          };
+
           while (vongLap < 5) {
             vongLap++;
-            const checkLoginSession = async () => {
-              try {
-                await goto(page, "https://gmail.com/", { waitUntil: "load" });
-                await delay(5000);
-                const cookies = await page.cookies();
-                //console.log(cookies);
-                const isFound = cookies.some((element) => {
-                  if (element.name === "GMAIL_AT") {
-                    return true;
-                  }
-                  return false;
-                });
-                if (isFound == true) {
-                  console.log("Login session pass. Profile ID: " + id);
-                } else {
-                  console.log("Login session fail. Profile ID:  " + id);
-                }
-                //break;
-              } catch (error) {}
-            };
-
-            const checkLocalStorage = async () => {
-              try {
-                await goto(page, "https://mail.tm/", {
-                  waitUntil: "load",
-                  timeout: 10000,
-                });
-
-                const localStorage = await page.evaluate(() =>
-                  Object.assign({}, window.localStorage)
-                );
-                // "hgjakndiikpfdov@diginey.com"
-                // "xxbbpobjyrckm@diginey.com"
-                if (JSON.stringify(localStorage).includes(mailTM)) {
-                  console.log("Local Storage Pass. ID: " + id);
-                } else {
-                  console.log("Fail. ID: " + id);
-                }
-                //break;
-              } catch (error) {
-                console.log(error);
-              }
-            };
             await checkLoginSession();
             await checkLocalStorage();
-
+            browser.close();
+            await deleteCache();
+            await deleteFolderProfile();
             break;
           }
-          //console.log(`=========`);
-
-          // while (vongLap < 5) {
-          //   vongLap++;
-          //   try {
-          //     await goto(page, "https://mail.tm/", {
-          //       waitUntil: "load",
-          //       timeout: 10000,
-          //     });
-
-          //     const localStorage = await page.evaluate(() =>
-          //       Object.assign({}, window.localStorage)
-          //     );
-          //     // "hgjakndiikpfdov@diginey.com"
-          //     // "xxbbpobjyrckm@diginey.com"
-          //     if (
-          //       JSON.stringify(localStorage).includes(
-          //         `vosydkegtdsohh@hldrive.com`
-          //       ) ||
-          //       JSON.stringify(localStorage).includes(
-          //         `eedxhgtbtmsit@hldrive.com`
-          //       ) ||
-          //       JSON.stringify(localStorage).includes(`uihkjm@hldrive.com`)
-          //     ) {
-          //       console.log("Local Storage Pass. ID: " + id);
-          //     } else {
-          //       console.log("Fail. ID: " + id);
-          //     }
-          //     break;
-          //   } catch (error) {
-          //     console.log(error);
-          //   }
-          // }
-
-          browser.close();
         } catch (error) {
           console.log(error.message);
         }
@@ -188,52 +191,9 @@ let vongLap = 0;
     (async () => {
       // Only three promises are run at once (as defined above)
       const result = await Promise.all(promises).then();
-      //console.log(1);
       result;
-      //console.log(result);
     })();
-
-    // while (vongLap < profileID.length) {
-    //   vongLap++;
-    //   try {
-    //     await delay(5000);
-    //     //Nối chuỗi xóa folder cache-profile
-    //     const profileCachePath = path.join(
-    //       hidemyaccCachePath,
-    //       profileID[vongLap]
-    //     );
-    //     // console.log(profileCachePath);
-    //     //Kiểm tra folder có tồn tại và xóa folder có file
-    //     if (fs.existsSync(profileCachePath)) {
-    //       fs.rmSync(profileCachePath, { recursive: true, force: true });
-    //       console.log("Delete cache pass. Profile ID: " + profileID[vongLap]);
-    //     } else {
-    //       console.log(
-    //         "Folder cache not found. Profile ID: " + profileID[vongLap]
-    //       );
-    //     }
-    //     //Nối chuỗi xóa folder profile
-    //     const folderProifle = "hma_" + profileID[vongLap];
-    //     //console.log(folderProifle);
-    //     const profilePath = path.join(hidemyaccProfilePath, folderProifle);
-    //     // console.log(profilePath);
-    //     //Kiểm tra folder có tồn tại và xóa folder có file
-    //     if (fs.existsSync(profilePath)) {
-    //       fs.rmSync(profilePath, { recursive: true, force: true });
-    //       console.log("Delete profile pass. Profile ID: " + profileID[vongLap]);
-    //     } else {
-    //       console.log(
-    //         "Folder profile not found. Profile ID: " + profileID[vongLap]
-    //       );
-    //     }
-    //   } catch (error) {
-    //     console.log(error.message);
-    //   }
-    // }
   } catch (error) {
     console.log(error.message);
   }
-  //   console.log("Done " + i);
-  //   console.log("-------------------");
-  // }
 })();

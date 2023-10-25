@@ -117,6 +117,7 @@ let i = 0;
 
     const randomClickPage = async () => {
       try {
+        await page.waitForSelector("ol.pagination__items li");
         const topics = await page.$$("ol.pagination__items li");
         const randomNumberPage =
           Math.floor(Math.random() * topics.length + 1) + 1;
