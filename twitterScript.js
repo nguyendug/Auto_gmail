@@ -32,18 +32,12 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
   }
 };
 
+let i = 0;
+
 !(async () => {
   try {
-    //const profileID = "6516332bf5f03d26a009455e";
-    //console.log(profileID)
-    const createProfile = await hidemyacc.create({
-      name: "Check back up",
-      folder: "65388abd2717a3373fe50055",
-    });
-    console.log(createProfile.data);
-    //console.log(1);
-    const profileID = createProfile.data.id; //Lấy profile ID vừa tạo
-    console.log(profileID);
+    const profileID = "647eff253bb6b40724437cfe";
+    //console.log(profileID
 
     const proxy = {
       mode: "none",
@@ -72,16 +66,106 @@ const waitForSelector = async (page, selector, options = { timeout: 3000 }) => {
     await goto(page, "https://twitter.com/home", {
       waitUntil: "load",
     });
+    await delay(5000);
+    const scrollToSelector = async (element) => {
+      try {
+        //Tìm vị trí hiện tại của trang web
+        const startPosition = await page.evaluate(async () => {
+          const mediary = window.scrollY;
+          return mediary;
+        });
+        console.log(`Start point: ` + startPosition);
 
-    const localStorage = await page.evaluate(() =>
-      JSON.stringify(window.localStorage.vuex)
-    );
+        // Tìm vị trí theo selector
+        // Find the iframe
+        const frame = await page.waitForSelector(element);
+        // Find its coordinates
+        const elementPosition = await page.evaluate((el) => {
+          const { x, y } = el.getBoundingClientRect();
+          return { x, y };
+        }, frame);
+        console.log(`Vị trí selector: ` + elementPosition.y);
 
-    await fs.appendFileSync(
-      "./backUp.txt",
-      JSON.stringify(localStorage, null, 2)
-    );
-    browser.close();
+        // Khoảng cách từ vị trí hiện tại đến vị trí của selector
+        const distance = elementPosition.y - startPosition;
+        console.log("Khoảng cách: " + distance);
+
+        // Cuộn đến vị trí của selector
+        //Âm là cuộn lên, dương là cuộn xuống
+        let totalHeight = 0;
+        while (Math.abs(totalHeight) < Math.abs(distance)) {
+          try {
+            // const mediary = randomnumber;
+            let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
+            console.log(`Random: ` + randomNumberPixel);
+            if (distance < 0) {
+              randomsNumberPixel = -randomNumberPixel;
+            } else {
+              randomsNumberPixel = randomNumberPixel;
+            }
+            console.log(`Random Pixel: ` + randomsNumberPixel);
+
+            if (
+              Math.abs(totalHeight + randomsNumberPixel) > Math.abs(distance)
+            ) {
+              randomsNumberPixel = distance - totalHeight;
+            }
+            await page.mouse.wheel({ deltaY: randomsNumberPixel });
+            totalHeight += randomsNumberPixel;
+            console.log(`Total Height: ` + totalHeight);
+            // if (totalHeight >= distance) {
+            //   totalHeight = distance - totalHeight;
+            //   console.log("Total Height 2: " + totalHeight);
+            //   break;
+            // }
+            const timedelay = Math.floor(Math.random() * 2001) + 1000;
+            await delay(timedelay);
+            console.log(`Time delay: ` + timedelay);
+            //console.log(m);
+          } catch (error) {
+            console.log(error.message);
+          }
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    while (i < 5) {
+      i++;
+      let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
+      await page.mouse.wheel({ deltaY: randomNumberPixel });
+      const timedelay = Math.floor(Math.random() * 2001) + 1000;
+      await delay(timedelay);
+    }
+    await delay(5000);
+
+    const randomLike = async () => {
+      try {
+        await page.waitForSelector(`div[data-testid="cellInnerDiv"]`);
+        const topics = await page.$$(`div[data-testid="cellInnerDiv"]`);
+        const randomNumberPage =
+          Math.floor(Math.random() * topics.length + 1) + 1;
+        console.log(randomNumberPage);
+        // click a random topic
+        const element = `div[data-testid="cellInnerDiv"]:nth-child(${randomNumberPage}) div[data-testid="like"]`;
+        await scrollToSelector(element);
+        await delay(5000);
+        await page.$eval(element, (elem) => elem.click());
+        await delay(5000);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    // await page.click(
+    //   `div[data-testid="cellInnerDiv"]:nth-child(2) div[data-testid="like"]`
+    // );
+    // await delay(5000);
+    await randomLike();
+    await delay(5000);
+
+    //browser.close();
   } catch (error) {
     console.log(error.message);
   }
