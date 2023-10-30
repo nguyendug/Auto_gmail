@@ -67,6 +67,18 @@ let i = 0;
       waitUntil: "load",
     });
     await delay(5000);
+
+    const randomScrollDown = async () => {
+      let randomLoop1 = Math.floor(Math.random() * 4) + 3;
+      while (i < randomLoop1) {
+        i++;
+        let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
+        await page.mouse.wheel({ deltaY: randomNumberPixel });
+        const timedelay = Math.floor(Math.random() * 2001) + 1000;
+        await delay(timedelay);
+      }
+    };
+
     const scrollToSelector = async (element) => {
       try {
         //Tìm vị trí hiện tại của trang web
@@ -131,39 +143,56 @@ let i = 0;
       }
     };
 
-    while (i < 5) {
-      i++;
-      let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
-      await page.mouse.wheel({ deltaY: randomNumberPixel });
-      const timedelay = Math.floor(Math.random() * 2001) + 1000;
-      await delay(timedelay);
+    try {
+      await randomScrollDown();
+      await delay(5000);
+      await page.click(`input[aria-label="Search query"]`);
+      await page.keyboard.type(`@YouTube`);
+      await page.keyboard.press("Enter", { waitUntil: "load" });
+      await delay(2000);
+      await page.click(`a[href="/YouTube"]`);
+      await delay(2000);
+      await randomScrollDown();
+      await delay(3000);
+    } catch (error) {
+      console.log(error.message);
+    }
+
+    try {
+      const element = `div[data-testid="placementTracking"]`;
+      await scrollToSelector(element);
+    } catch (error) {
+      console.log(error.message);
     }
     await delay(5000);
 
-    const randomLike = async () => {
-      try {
-        await page.waitForSelector(`div[data-testid="cellInnerDiv"]`);
-        const topics = await page.$$(`div[data-testid="cellInnerDiv"]`);
-        const randomNumberPage =
-          Math.floor(Math.random() * topics.length + 1) + 1;
-        console.log(randomNumberPage);
-        // click a random topic
-        const element = `div[data-testid="cellInnerDiv"]:nth-child(${randomNumberPage}) div[data-testid="like"]`;
-        await scrollToSelector(element);
-        await delay(5000);
-        await page.$eval(element, (elem) => elem.click());
-        await delay(5000);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
+    await page.click(`div[data-testid="placementTracking"]`);
+    await delay(5000);
+
+    // const randomLike = async () => {
+    //   try {
+    //     await page.waitForSelector(`div[data-testid="cellInnerDiv"]`);
+    //     const topics = await page.$$(`div[data-testid="cellInnerDiv"]`);
+    //     const randomNumberPage =
+    //       Math.floor(Math.random() * topics.length + 1) + 1;
+    //     console.log(randomNumberPage);
+    //     // click a random topic
+    //     const element = `div[data-testid="cellInnerDiv"]:nth-child(${randomNumberPage}) div[data-testid="like"]`;
+    //     await scrollToSelector(element);
+    //     await delay(5000);
+    //     await page.$eval(element, (elem) => elem.click());
+    //     await delay(5000);
+    //   } catch (error) {
+    //     console.log(error.message);
+    //   }
+    // };
 
     // await page.click(
     //   `div[data-testid="cellInnerDiv"]:nth-child(2) div[data-testid="like"]`
     // );
     // await delay(5000);
-    await randomLike();
-    await delay(5000);
+    //await randomLike();
+    //await delay(5000);
 
     //browser.close();
   } catch (error) {
