@@ -81,59 +81,48 @@ let i = 0;
 
     const scrollToSelector = async (element) => {
       try {
-        //Tìm vị trí hiện tại của trang web
-        const startPosition = await page.evaluate(async () => {
-          const mediary = window.scrollY;
-          return mediary;
-        });
-        console.log(`Start point: ` + startPosition);
-
-        // Tìm vị trí theo selector
-        // Find the iframe
         const frame = await page.waitForSelector(element);
-        // Find its coordinates
         const elementPosition = await page.evaluate((el) => {
           const { x, y } = el.getBoundingClientRect();
           return { x, y };
         }, frame);
         console.log(`Vị trí selector: ` + elementPosition.y);
+        const distance = elementPosition.y;
 
-        // Khoảng cách từ vị trí hiện tại đến vị trí của selector
-        const distance = elementPosition.y - startPosition;
-        console.log("Khoảng cách: " + distance);
+        const heightPage = await page.evaluate(async () => {
+          const mediary = document.documentElement.clientHeight;
+          return mediary;
+        });
+        const heightElament = await page.evaluate(async () => {
+          const mediary = document.querySelectorAll(element)[0].clientHeight;
+          return mediary;
+        });
+        const heightt = (heightPage - heightElament) / 2;
 
-        // Cuộn đến vị trí của selector
-        //Âm là cuộn lên, dương là cuộn xuống
         let totalHeight = 0;
         while (Math.abs(totalHeight) < Math.abs(distance)) {
           try {
-            // const mediary = randomnumber;
-            let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
-            console.log(`Random: ` + randomNumberPixel);
+            let randomsNumberPixel = Math.floor(Math.random() * 301) + 500;
+            console.log(`Random: ` + randomsNumberPixel);
             if (distance < 0) {
-              randomsNumberPixel = -randomNumberPixel;
+              randomNumberPixel = -randomsNumberPixel;
             } else {
-              randomsNumberPixel = randomNumberPixel;
+              randomNumberPixel = randomsNumberPixel;
             }
-            console.log(`Random Pixel: ` + randomsNumberPixel);
-
+            console.log(`Random Pixel: ` + randomNumberPixel);
             if (
-              Math.abs(totalHeight + randomsNumberPixel) > Math.abs(distance)
+              Math.abs(totalHeight + randomNumberPixel) > Math.abs(distance)
             ) {
-              randomsNumberPixel = distance - totalHeight;
+              randomNumberPixel = distance - totalHeight - heightt;
+              await page.mouse.wheel({ deltaY: randomNumberPixel });
+              break;
             }
-            await page.mouse.wheel({ deltaY: randomsNumberPixel });
-            totalHeight += randomsNumberPixel;
+            await page.mouse.wheel({ deltaY: randomNumberPixel });
+            totalHeight += randomNumberPixel;
             console.log(`Total Height: ` + totalHeight);
-            // if (totalHeight >= distance) {
-            //   totalHeight = distance - totalHeight;
-            //   console.log("Total Height 2: " + totalHeight);
-            //   break;
-            // }
             const timedelay = Math.floor(Math.random() * 2001) + 1000;
             await delay(timedelay);
             console.log(`Time delay: ` + timedelay);
-            //console.log(m);
           } catch (error) {
             console.log(error.message);
           }

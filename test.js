@@ -89,66 +89,58 @@ let i = 0;
 
     const scrollToSelector = async (element) => {
       try {
-        //Tìm vị trí hiện tại của trang web
-        // const startPosition = await page.evaluate(async () => {
-        //   const mediary = window.scrollY;
-        //   return mediary;
-        // });
-        // console.log(`Start point: ` + startPosition);
-
         const frame = await page.waitForSelector(element);
         const elementPosition = await page.evaluate((el) => {
           const { x, y } = el.getBoundingClientRect();
           return { x, y };
         }, frame);
         console.log(`Vị trí selector: ` + elementPosition.y);
+        const distance = elementPosition.y;
 
-        const distance = elementPosition.y; //- startPosition;
-        // console.log("Khoảng cách: " + distance);
+        const heightPage = await page.evaluate(async () => {
+          const mediary = document.documentElement.clientHeight;
+          return mediary;
+        });
+        const heightElament = await page.evaluate(async () => {
+          const mediary = document.querySelectorAll(element)[0].clientHeight;
+          return mediary;
+        });
+        const heightt = (heightPage - heightElament) / 2;
 
         let totalHeight = 0;
-        if (elementPosition.y >= 0) {
-          while (totalHeight < distance) {
-            try {
-              console.log(`1000`);
-              let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
-              console.log(`Random: ` + randomNumberPixel);
-              if (totalHeight + randomNumberPixel > distance) {
-                const heightPage = await page.evaluate(async () => {
-                  const mediary = document.documentElement.clientHeight;
-                  return mediary;
-                });
-
-                const heightElament = await page.evaluate(async () => {
-                  const mediary = document.querySelectorAll(
-                    `a[href="/blog/proxy-for-google-ads-part-2"]:nth-child(2)`
-                  ).clientHeight;
-                  return mediary;
-                });
-                //console.log(`Height /2: `, heighttt / 2);
-                randomNumberPixel =
-                  distance - totalHeight - (heightPage - heightElament) / 2;
-                await page.mouse.wheel({ deltaY: randomNumberPixel });
-                break;
-              }
-              await page.mouse.wheel({ deltaY: randomNumberPixel });
-              totalHeight += randomNumberPixel;
-              console.log(`Total Height: ` + totalHeight);
-              const timedelay = Math.floor(Math.random() * 2001) + 1000;
-              await delay(timedelay);
-              console.log(`Time delay: ` + timedelay);
-              //console.log(m);
-            } catch (error) {
-              console.log(error.message);
+        while (Math.abs(totalHeight) < Math.abs(distance)) {
+          try {
+            let randomsNumberPixel = Math.floor(Math.random() * 301) + 500;
+            console.log(`Random: ` + randomsNumberPixel);
+            if (distance < 0) {
+              randomNumberPixel = -randomsNumberPixel;
+            } else {
+              randomNumberPixel = randomsNumberPixel;
             }
+            console.log(`Random Pixel: ` + randomNumberPixel);
+            if (
+              Math.abs(totalHeight + randomNumberPixel) > Math.abs(distance)
+            ) {
+              randomNumberPixel = distance - totalHeight - heightt;
+              await page.mouse.wheel({ deltaY: randomNumberPixel });
+              break;
+            }
+            await page.mouse.wheel({ deltaY: randomNumberPixel });
+            totalHeight += randomNumberPixel;
+            console.log(`Total Height: ` + totalHeight);
+            const timedelay = Math.floor(Math.random() * 2001) + 1000;
+            await delay(timedelay);
+            console.log(`Time delay: ` + timedelay);
+          } catch (error) {
+            console.log(error.message);
           }
         }
       } catch (error) {
         console.log(error.message);
       }
     };
-    await randomScrollDown();
-    await delay(3000);
+    //await randomScrollDown();
+    //await delay(3000);
 
     // const element = `a[href="/blog/proxy-for-google-ads-part-2"]:nth-child(2)`;
     const element = `a[href="/blog/review-ip-royal-2023--details--pricing-and-features"]:nth-child(2)`;
