@@ -9,7 +9,7 @@ const pLimit = require("p-limit");
 //const Promise = require("bluebird");
 const path = require("path");
 // const { pageExtend } = require("puppeteer-jquery");
-const hidemyacc = new (require("./hidemyacc"))();
+const hidemyacc = new (require("../hidemyacc"))();
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const goto = async (

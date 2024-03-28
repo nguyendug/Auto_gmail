@@ -11,7 +11,7 @@ const path = require("path");
 const { get } = require("https");
 const { error } = require("console");
 const { checkPrime } = require("crypto");
-const hidemyacc = new (require("./hidemyacc"))();
+const hidemyacc = new (require("../hidemyacc"))();
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const goto = async (

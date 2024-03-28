@@ -37,7 +37,6 @@ let i = 0;
 !(async () => {
   try {
     const profileID = "647eff253bb6b40724437cfe";
-    //console.log(profileID
 
     const proxy = {
       mode: "none",
@@ -52,41 +51,70 @@ let i = 0;
       proxy: JSON.stringify(proxy),
       setTimeout: 1000,
     });
-    //const inforProfile = await hidemyacc.profiles(id);
+    // console.log("1");
+    // console.log(startProfile.data);
 
-    const browser = await puppeteer.connect({
+    const browser1 = await puppeteer.connect({
       browserWSEndpoint: startProfile.data.wsUrl,
       defaultViewport: null,
       slowMo: 60,
     });
 
-    // console.log(inforProfile.data.name);
-    assert(browser);
-    const page = await browser.newPage(); //Mở 1 tab mới
-    await goto(page, "https://hidemyacc.com/blog?page=1", {
-      waitUntil: "load",
-    });
-    await delay(5000);
+    assert(browser1);
+    // const page = await browser.newPage(); //Mở 1 tab mới
+    // await goto(page, "https://addmefast.com/free_points/facebook_likes", {
+    //   waitUntil: "load",
+    // });
+    // await delay(5000);
 
-    // const bodyHandle = await page.$("body");
-    // const boundingBox = await bodyHandle.boundingBox();
-    // const height = boundingBox.height;
-    // console.log("height: " + height);
-    // const altHeight = await page.evaluate(
-    //   () => document.documentElement.offsetHeight
-    // );
-    // console.log("altHeight: " + altHeight);
-    const randomScrollDown = async () => {
-      let randomLoop1 = Math.floor(Math.random() * 4) + 5;
-      while (i < randomLoop1) {
-        i++;
-        let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
-        await page.mouse.wheel({ deltaY: randomNumberPixel });
-        const timedelay = Math.floor(Math.random() * 2001) + 1000;
-        await delay(timedelay);
-      }
-    };
+    (async () => {
+      // Mở trình duyệt 1 và thực hiện click
+      //const browser1 = await puppeteer.launch();
+      const page1 = await browser1.newPage();
+      await page1.goto("https://addmefast.com/free_points/facebook_likes");
+      await delay(10000);
+      // await page1.click(`('div[class="menu"] div[class="menu_item_sub"]')[1]`, {
+      //   waitUntil: "load",
+      // });
+      await page1.click(`div[class="fol-conf-but"] a`);
+      await delay(5000);
 
+      // Đợi cho trình duyệt thứ hai được mở và lưu trữ trình đại diện của nó
+      const browser2 = await puppeteer.connect({
+        browserWSEndpoint: browser1.wsEndpoint(),
+      });
+      const pages = await browser2.pages();
+      const page2 = pages[pages.length - 1]; // Trình duyệt thứ hai là trang cuối cùng mở trong mảng các trang
+
+      // Thực hiện các hành động trên trình duyệt thứ hai
+      //await page2.goto("https://example.com");
+      // Tiếp tục thực hiện các hành động khác trên trình duyệt thứ hai
+      await delay(5000);
+      await page2.reload();
+      await page2.click('input[name="email"]:nth-child(2)');
+      await page2.keyboard.type("dungnt.oneadx@gmail.com");
+      await delay(10000);
+
+      // Đóng trình duyệt khi hoàn thành
+      await browser1.close();
+      await browser2.close();
+    })();
+    // const clickButton = async () => {
+    //   await page.click();
+    // };
+
+    // const randomScrollDown = async () => {
+    //   let randomLoop1 = Math.floor(Math.random() * 4) + 5;
+    //   while (i < randomLoop1) {
+    //     i++;
+    //     let randomNumberPixel = Math.floor(Math.random() * 301) + 500;
+    //     await page.mouse.wheel({ deltaY: randomNumberPixel });
+    //     const timedelay = Math.floor(Math.random() * 2001) + 1000;
+    //     await delay(timedelay);
+    //   }
+    // };
+
+    /*
     const scrollToSelector = async (element) => {
       try {
         const frame = await page.waitForSelector(element);
@@ -139,12 +167,9 @@ let i = 0;
         console.log(error.message);
       }
     };
-    //await randomScrollDown();
-    //await delay(3000);
+    */
 
-    // const element = `a[href="/blog/proxy-for-google-ads-part-2"]:nth-child(2)`;
-    const element = `a[href="/blog/review-ip-royal-2023--details--pricing-and-features"]:nth-child(2)`;
-    await scrollToSelector(element);
+    //await scrollToSelector(element);
     await delay(5000);
   } catch (error) {
     console.log(error.message);
